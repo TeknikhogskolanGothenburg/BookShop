@@ -111,6 +111,10 @@
     <Compile Include="Migrations\20180313131616_BookAuthor.designer.cs">
       <DependentUpon>20180313131616_BookAuthor.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20180314102706_ShopAndRatings.cs" />
+    <Compile Include="Migrations\20180314102706_ShopAndRatings.designer.cs">
+      <DependentUpon>20180314102706_ShopAndRatings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\BookContextModelSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
