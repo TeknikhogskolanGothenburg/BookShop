@@ -104,16 +104,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Authors.cs" />
-    <Compile Include="BookAuthor.cs" />
-    <Compile Include="Books.cs" />
-    <Compile Include="BookShopDbContext.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Quotes.cs" />
-    <Compile Include="Ratings.cs" />
-    <Compile Include="ShopBook.cs" />
-    <Compile Include="Shops.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
