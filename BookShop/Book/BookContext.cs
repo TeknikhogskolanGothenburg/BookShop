@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Migrations;
 using BookShop.Domain;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Console;
 
 namespace BookShop.Data
 {
@@ -12,6 +13,12 @@ namespace BookShop.Data
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<Shop> Shops { get; set; }
 
+        public static readonly LoggerFactory BookLoggerFactory
+        = new LoggerFactory(new[] {
+            new ConsoleLoggerProvider((category, level)
+                => category == DbLoggerCategory.Database.Command.Name
+                && level == LogLevel.Information, true)
+      });
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -22,7 +29,10 @@ namespace BookShop.Data
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server = (localdb)\\mssqllocaldb; Database = BookShopDb; Trusted_Connection = True;");
+            optionsBuilder
+                 .EnableSensitiveDataLogging()
+                 .UseLoggerFactory(BookLoggerFactory)
+                 .UseSqlServer("Server = (localdb)\\mssqllocaldb; Database = BookShopDb; Trusted_Connection = True;");
         }
 
     }

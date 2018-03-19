@@ -18,7 +18,105 @@ namespace UI
             //GetAllBooks();
             //GetFirst();
             //Find();
-            Update();
+            //Update();
+            //UpdateDisconnected();
+            //DeleteOne();
+            //DeleteMany();
+            //DeleteManyDisconnected();
+            //SelectRawSql();
+            //AddAuthors();
+            //SelectRawSqlWithOrderingAndFilter();
+            //SelectUsingStoredProcedure();
+
+        }
+
+        public static void SelectUsingStoredProcedure()
+        {
+            string searchString = "Om";
+            var books = _context.Books.FromSql("EXEC FilterBooksByTitlePart {0}", searchString).ToList();
+            foreach (var book in books)
+            {
+                Console.WriteLine(book.Title);
+            }
+        }
+
+        public static void SelectRawSqlWithOrderingAndFilter()
+        {
+            var books = _context.Books.FromSql("SELECT * FROM Books")
+                .OrderByDescending(m => m.ReleaseDate)
+                .Where(m => m.Title.StartsWith("Brott"))
+                .ToList();
+            foreach (var book in books)
+            {
+                Console.WriteLine(book.Title);
+            }
+        }
+
+        public static void AddAuthors()
+        {
+            Author author1 = new Author();
+            author1.FirstName = "Fjodor";
+            author1.LastName = "Dostojevskij";
+            author1.BirthDay = new DateTime(1821, 11, 11);
+           
+            Author author2 = new Author();
+            author2.FirstName = "Kalle";
+            author2.LastName = "Svensson";
+            author2.BirthDay = new DateTime(1983, 4, 19);
+
+            _context.Authors.AddRange(author1, author2);
+            _context.SaveChanges();
+        }
+
+        public static void SelectRawSql()
+        {
+            string sql = "SELECT * FROM Books";
+            var books = _context.Books.FromSql(sql).ToList();
+            foreach (var book in books)
+            {
+                Console.WriteLine(book.Title);
+            }
+        }
+
+        public static void DeleteManyDisconnected()
+        {
+            string titleStart = "Fint";
+            var books = _context.Books.Where(m => m.Title.StartsWith(titleStart)).ToList();
+
+            //Här tänker vi att vi inte längre har kvar orginal contexten
+            var newContext = new BookContext();
+            newContext.Books.RemoveRange(books);
+            newContext.SaveChanges();
+        }
+
+
+        public static void DeleteMany()
+        {
+            string titleStart = "A";
+            var books = _context.Books.Where(m => m.Title.StartsWith(titleStart)).ToList();
+            _context.Books.RemoveRange(books);
+            _context.SaveChanges();
+        }
+
+        public static void DeleteOne()
+        {
+            var book = _context.Books.Find(2);
+            // var movie2 = new Movie { Id = 99, Title = "kjshdf", ReleaseDate = DateTime.Now};
+            _context.Books.Remove(book);
+            _context.SaveChanges();
+        }
+
+        public static void UpdateDisconnected()
+        {
+            var book = _context.Books.Find(3);
+            book.ReleaseDate = new DateTime(1992, 10, 14);
+
+            //Här tänker vi att vi inte längre har kvar orginal contexten
+
+            var newContext = new BookContext();
+            newContext.Books.Update(book);
+            newContext.SaveChanges();
+
         }
 
         public static void Update()
@@ -26,7 +124,7 @@ namespace UI
             string titleStart = "Hej";
             var book = _context.Books.Where(m => m.Title.StartsWith(titleStart)).ToList();
             book.ForEach(b => b.Title = "Brott och starff");
-           // _context.Books.Add(new Book { Title = "Brott och straff", ReleaseDate = DateTime.Now });
+           // _context.Books.Add(new Book { ReleaseDate = DateTime.Now });
             _context.SaveChanges();
         }
 
