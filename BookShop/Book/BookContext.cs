@@ -12,6 +12,8 @@ namespace BookShop.Data
         public DbSet<Quote> Quotes { get; set; }
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<Shop> Shops { get; set; }
+        public DbSet<BookAuthor> BookAuthors { get; set; }
+        public DbSet<ShopBook> ShopBooks { get; set; }
 
         public static readonly LoggerFactory BookLoggerFactory
         = new LoggerFactory(new[] {

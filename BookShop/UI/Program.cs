@@ -9,7 +9,6 @@ namespace UI
 {
     class Program
     {
-        private static BookContext _context = new BookContext();
 
         static void Main(string[] args)
         {
@@ -28,156 +27,120 @@ namespace UI
             //SelectRawSqlWithOrderingAndFilter();
             //SelectUsingStoredProcedure();
 
+            //AddAuthorsToBook();
+            //DisplayBooksEagerLoad();
+            //AddManyToManyObject();
+            //AddQuotesToBook();
+            //AddRating();
+            //ProjectionLoading();
+            //ProjectionLoading2();
+
+
         }
 
-        public static void SelectUsingStoredProcedure()
+        private static void ProjectionLoading2()
         {
-            string searchString = "Om";
-            var books = _context.Books.FromSql("EXEC FilterBooksByTitlePart {0}", searchString).ToList();
-            foreach (var book in books)
-            {
-                Console.WriteLine(book.Title);
-            }
-        }
-
-        public static void SelectRawSqlWithOrderingAndFilter()
-        {
-            var books = _context.Books.FromSql("SELECT * FROM Books")
-                .OrderByDescending(m => m.ReleaseDate)
-                .Where(m => m.Title.StartsWith("Brott"))
+            var context = new BookContext();
+            var projectedAuthor = context.Authors.Select(a =>
+                new { a.FirstName, a.LastName })
                 .ToList();
+
+            projectedAuthor.ForEach(pa => Console.WriteLine(pa.LastName + " " + pa.FirstName));
+        }
+
+        private static void ProjectionLoading()
+        {
+            var context = new BookContext();
+            var projectedBook = context.Books.Select(a =>
+                new { a.Title, QuoteCount = a.Quotes.Count })
+                .Where(a => a.QuoteCount > 0)
+                .ToList();
+
+            projectedBook.ForEach(pb => Console.WriteLine(pb.Title + " has " + pb.QuoteCount + " quotes"));
+        }
+
+        private static void AddRating()
+        {
+            var context = new BookContext();
+            var book = context.Books.Find(6);
+            var rate = new Rating { BookId = book.Id, Magazine = "New Yorker", RatingDate = DateTime.Now, Points = 5 };
+            context.Add(rate);
+            context.SaveChanges();
+        }
+
+        private static void AddQuotesToBook()
+        {
+            var context = new BookContext();
+            var book = context.Books.FirstOrDefault(a => a.Title.StartsWith("Brott"));
+            if (null != book)
+            {
+                book.Quotes.Add(new Quote { Text = "What else can I do to get some money?" });
+                book.Quotes.Add(new Quote { Text = "Where can I hide the axe?" });
+                context.SaveChanges();
+            }
+        }
+
+        private static void AddManyToManyObject()
+        {
+            var context = new BookContext();
+            var author = new Author { FirstName = "Paolo", LastName = "Roberto", BirthDay = new DateTime(1966, 5, 2)};
+            var book = context.Books.Find(6);
+            context.Add(author);
+            context.Add(new BookAuthor { Book = book, Author = author });
+            context.SaveChanges();
+        }
+
+        private static void DisplayBooksEagerLoad()
+        {
+            var context = new BookContext();
+            var books = context.Books
+                .Include(b => b.Authors)
+                    .ThenInclude(ba => ba.Author)                       
+                .Include(b => b.Ratings)
+                .Include(b => b.Quotes)
+                .Include(b => b.Shops )
+                    .ThenInclude(sb => sb.Shop)
+                .ToList();
+
+            Console.WriteLine("\n\n\n====================\n");
             foreach (var book in books)
             {
-                Console.WriteLine(book.Title);
+                Console.Write(book.Title);
+                if (null != book.Ratings)
+                {
+                    foreach(var rating in book.Ratings)
+                    {
+                        Console.WriteLine(" => Magazine: " + rating.Magazine + " Points: " + rating.Points);
+                    }
+                    
+                }
+                else
+                {
+                    Console.WriteLine(" => Not Rated!");
+                }
+                foreach (var author in book.Authors)
+                {
+                    Console.WriteLine("\t" + author.Author.FirstName + " " + author.Author.LastName);
+                    foreach (var quote in book.Quotes)
+                    {
+                        Console.WriteLine("\t\t" + quote.Text);
+                    }
+                }
             }
         }
 
-        public static void AddAuthors()
+        private static void AddAuthorsToBook()
         {
-            Author author1 = new Author();
-            author1.FirstName = "Fjodor";
-            author1.LastName = "Dostojevskij";
-            author1.BirthDay = new DateTime(1821, 11, 11);
-           
-            Author author2 = new Author();
-            author2.FirstName = "Kalle";
-            author2.LastName = "Svensson";
-            author2.BirthDay = new DateTime(1983, 4, 19);
-
-            _context.Authors.AddRange(author1, author2);
-            _context.SaveChanges();
-        }
-
-        public static void SelectRawSql()
-        {
-            string sql = "SELECT * FROM Books";
-            var books = _context.Books.FromSql(sql).ToList();
-            foreach (var book in books)
+            var context = new BookContext();
+            var book = context.Books.First();
+            var authors = context.Authors.ToList();
+            foreach (var author in authors)
             {
-                Console.WriteLine(book.Title);
+                context.BookAuthors.Add(new BookAuthor { AuthorId = author.Id, BookId = book.Id });
             }
-        }
+            context.SaveChanges();
+            //authors.ForEach(a => context.BookAuthor.Add(new BookAuthor { AuthorId = a.Id, BookId = book.Id }));
 
-        public static void DeleteManyDisconnected()
-        {
-            string titleStart = "Fint";
-            var books = _context.Books.Where(m => m.Title.StartsWith(titleStart)).ToList();
-
-            //Här tänker vi att vi inte längre har kvar orginal contexten
-            var newContext = new BookContext();
-            newContext.Books.RemoveRange(books);
-            newContext.SaveChanges();
-        }
-
-
-        public static void DeleteMany()
-        {
-            string titleStart = "A";
-            var books = _context.Books.Where(m => m.Title.StartsWith(titleStart)).ToList();
-            _context.Books.RemoveRange(books);
-            _context.SaveChanges();
-        }
-
-        public static void DeleteOne()
-        {
-            var book = _context.Books.Find(2);
-            // var movie2 = new Movie { Id = 99, Title = "kjshdf", ReleaseDate = DateTime.Now};
-            _context.Books.Remove(book);
-            _context.SaveChanges();
-        }
-
-        public static void UpdateDisconnected()
-        {
-            var book = _context.Books.Find(3);
-            book.ReleaseDate = new DateTime(1992, 10, 14);
-
-            //Här tänker vi att vi inte längre har kvar orginal contexten
-
-            var newContext = new BookContext();
-            newContext.Books.Update(book);
-            newContext.SaveChanges();
-
-        }
-
-        public static void Update()
-        {
-            string titleStart = "Hej";
-            var book = _context.Books.Where(m => m.Title.StartsWith(titleStart)).ToList();
-            book.ForEach(b => b.Title = "Brott och starff");
-           // _context.Books.Add(new Book { ReleaseDate = DateTime.Now });
-            _context.SaveChanges();
-        }
-
-        public static void Find()
-        {
-            var book1 = _context.Books.FirstOrDefault(b => b.Id == 2);
-            var book2 = _context.Books.Find(2);
-            Console.WriteLine(book1.Title);
-            Console.WriteLine(book2.Title);
-        }
-
-        public static void GetFirst()
-        {
-            string titleStart = "A";
-            //var movie = (from m in _context.Movies where m.Title.StartsWith(titleStart) select m).FirstOrDefault();
-            var book = _context.Books.FirstOrDefault(m => m.Title.StartsWith(titleStart));
-            Console.WriteLine(book.Title);
-        }
-
-        public static void GetAllBooks()
-        {
-            var books1 = _context.Books.ToList();
-            //SELECT m.title FROM m movies
-            var books2 = (from b in _context.Books select b.Title).ToList();
-            var books3 = _context.Books.Where(m => m.Title.StartsWith("En het")).ToList();
-            string startTitle = "A";
-            var books4 = (from b in _context.Books where b.Title.StartsWith(startTitle) select b).ToList();
-            // SELECT * FROM movies
-            // foreach(var book in _context.Books)
-            foreach (var book in books4)
-            {
-                Console.WriteLine(book.Title);
-            }
-        }
-
-        private static void AddBooks()
-        {
-            Book newBook1 = new Book { Title = "Afrodite", ReleaseDate = DateTime.Now };
-            Book newBook2 = new Book { Title = "Omringad av idioter", ReleaseDate = new DateTime (2017, 03, 14) };
-            Book newBook3 = new Book { Title = "Are you ok?", ReleaseDate = new DateTime ( 1970, 05, 05 ) };
-            List<Book> newBooks = new List<Book> { newBook1, newBook2, newBook3 };
-            _context.Books.AddRange(newBooks);
-            _context.SaveChanges();
-        }
-
-        private static void AddBook()
-        {
-            Book newBook = new Book();
-            newBook.Title = "Svindlande höjder";
-            newBook.ReleaseDate = System.DateTime.Now;
-
-            _context.Books.Add(newBook);
-            _context.SaveChanges();
         }
     }
 }

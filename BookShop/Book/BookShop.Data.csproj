@@ -122,6 +122,10 @@
     <Compile Include="Migrations\20180319090225_StoredProcedure.designer.cs">
       <DependentUpon>20180319090225_StoredProcedure.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20180319092413_joinTables.cs" />
+    <Compile Include="Migrations\20180319092413_joinTables.designer.cs">
+      <DependentUpon>20180319092413_joinTables.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\BookContextModelSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
