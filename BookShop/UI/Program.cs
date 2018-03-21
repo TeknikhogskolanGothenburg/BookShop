@@ -9,6 +9,7 @@ namespace UI
 {
     class Program
     {
+        
 
         static void Main(string[] args)
         {
@@ -26,8 +27,10 @@ namespace UI
             //AddAuthors();
             //SelectRawSqlWithOrderingAndFilter();
             //SelectUsingStoredProcedure();
+            //SingleObjectModification.AddShops();
 
             //AddAuthorsToBook();
+            //AddBooksToShop();
             //DisplayBooksEagerLoad();
             //AddManyToManyObject();
             //AddQuotesToBook();
@@ -127,6 +130,18 @@ namespace UI
                     }
                 }
             }
+        }
+
+        private static void AddBooksToShop()
+        {
+            var context = new BookContext();
+            var shop = context.Shops.First();
+            var books = context.Books.ToList();
+            foreach(var book in books)
+            {
+                context.ShopBooks.Add(new ShopBook { BookId = book.Id, ShopId = shop.Id });
+            }
+            context.SaveChanges();
         }
 
         private static void AddAuthorsToBook()

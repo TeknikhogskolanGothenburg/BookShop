@@ -141,7 +141,16 @@ namespace UI
             }
         }
 
-        private static void AddBooks()
+        public static void AddShops()
+        {
+            Shop newShop1 = new Shop { Name = "Akademibokhandeln", Address = "Stora gatan 23, Göteborg" };
+            Shop newShop2 = new Shop { Name = "Ready", Address = "Smala örngatan 8A, Halmstad" };
+            List<Shop> newShop = new List<Shop> { newShop1, newShop2 };
+            _context.Shops.AddRange(newShop);
+            _context.SaveChanges();
+        }
+
+        public static void AddBooks()
         {
             Book newBook1 = new Book { Title = "Afrodite", ReleaseDate = DateTime.Now };
             Book newBook2 = new Book { Title = "Omringad av idioter", ReleaseDate = new DateTime(2017, 03, 14) };
@@ -151,7 +160,7 @@ namespace UI
             _context.SaveChanges();
         }
 
-        private static void AddBook()
+        public static void AddBook()
         {
             Book newBook = new Book();
             newBook.Title = "Svindlande höjder";
