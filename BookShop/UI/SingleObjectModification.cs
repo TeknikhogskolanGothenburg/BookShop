@@ -109,7 +109,16 @@ namespace UI
             _context.SaveChanges();
         }
 
-        public static void Find()
+        public static void FindBookByTitle()
+        {
+            var books = _context.Books.Where(b => b.Title.Contains("pain")).ToList();
+            foreach(var book in books)
+            {
+                Console.WriteLine(book.Title + " " + book.ReleaseDate);
+            }
+        }
+
+        public static void FindBookById()
         {
             var book1 = _context.Books.FirstOrDefault(b => b.Id == 2);
             var book2 = _context.Books.Find(2);
@@ -117,7 +126,7 @@ namespace UI
             Console.WriteLine(book2.Title);
         }
 
-        public static void GetFirst()
+        public static void GetFirstBook()
         {
             string titleStart = "A";
             //var movie = (from m in _context.Movies where m.Title.StartsWith(titleStart) select m).FirstOrDefault();
@@ -127,13 +136,22 @@ namespace UI
 
         public static void GetAllBooks()
         {
-            var books1 = _context.Books.ToList();
-            //SELECT m.title FROM m movies
-            var books2 = (from b in _context.Books select b.Title).ToList();
-            var books3 = _context.Books.Where(m => m.Title.StartsWith("En het")).ToList();
-            string startTitle = "A";
+            var books = _context.Books.ToList();
+            foreach (var book in books)
+            {
+                Console.WriteLine(book.Title + " " + book.ReleaseDate);
+            }
+        }
+
+        public static void GetAllBooksByTitle()
+        {
+            //var books1 = _context.Books.ToList();
+            //SELECT m.title FROM m books
+            //var books2 = (from b in _context.Books select b.Title).ToList();
+            //var books3 = _context.Books.Where(m => m.Title.StartsWith("En het")).ToList();
+            string startTitle = "P";
             var books4 = (from b in _context.Books where b.Title.StartsWith(startTitle) select b).ToList();
-            // SELECT * FROM movies
+            // SELECT * FROM books
             // foreach(var book in _context.Books)
             foreach (var book in books4)
             {
@@ -152,9 +170,9 @@ namespace UI
 
         public static void AddBooks()
         {
-            Book newBook1 = new Book { Title = "Afrodite", ReleaseDate = DateTime.Now };
-            Book newBook2 = new Book { Title = "Omringad av idioter", ReleaseDate = new DateTime(2017, 03, 14) };
-            Book newBook3 = new Book { Title = "Are you ok?", ReleaseDate = new DateTime(1970, 05, 05) };
+            Book newBook1 = new Book { Title = "Panta mera", ReleaseDate = DateTime.Now };
+            Book newBook2 = new Book { Title = "Le Pain francais", ReleaseDate = new DateTime(1957, 01, 15) };
+            Book newBook3 = new Book { Title = "Please don't go", ReleaseDate = new DateTime(2007, 11, 03) };
             List<Book> newBooks = new List<Book> { newBook1, newBook2, newBook3 };
             _context.Books.AddRange(newBooks);
             _context.SaveChanges();

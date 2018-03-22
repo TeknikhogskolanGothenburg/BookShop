@@ -15,6 +15,12 @@ namespace Webapplication.Controllers
             return View();
         }
 
+        public ActionResult Books()
+        {
+            var books = Program.GetBooksAndAuthors();
+            return View(books);
+        }
+
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";

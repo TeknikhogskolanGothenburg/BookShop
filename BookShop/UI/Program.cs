@@ -7,29 +7,32 @@ using BookShop.Domain;
 
 namespace UI
 {
-    class Program
+    public class Program
     {
         
 
         static void Main(string[] args)
         {
-            //AddBook();
-            //AddBooks();
-            //GetAllBooks();
-            //GetFirst();
-            //Find();
-            //Update();
-            //UpdateDisconnected();
-            //DeleteOne();
-            //DeleteMany();
-            //DeleteManyDisconnected();
-            //SelectRawSql();
-            //AddAuthors();
-            //SelectRawSqlWithOrderingAndFilter();
-            //SelectUsingStoredProcedure();
+            //SingleObjectModification.AddBook();
+            //SingleObjectModification.AddBooks();
+            //SingleObjectModification.GetAllBooksByTitle();
+            //SingleObjectModification.GetAllBooks();
+            //SingleObjectModification.GetFirstBook();
+            //SingleObjectModification.FindBookById();
+            //SingleObjectModification.FindBookByTitle();
+            //SingleObjectModification.Update();
+            //SingleObjectModification.UpdateDisconnected();
+            //SingleObjectModification.DeleteOne();
+            //SingleObjectModification.DeleteMany();
+            //SingleObjectModification.DeleteManyDisconnected();
+            //SingleObjectModification.SelectRawSql();
+            //SingleObjectModification.AddAuthors();
+            //SingleObjectModification.SelectRawSqlWithOrderingAndFilter();
+            //SingleObjectModification.SelectUsingStoredProcedure();
             //SingleObjectModification.AddShops();
 
             //AddAuthorsToBook();
+            //AddBookAuthorsId(2, 6);
             //AddBooksToShop();
             //DisplayBooksEagerLoad();
             //AddManyToManyObject();
@@ -41,7 +44,7 @@ namespace UI
 
         }
 
-        private static void ProjectionLoading2()
+        public static void ProjectionLoading2()
         {
             var context = new BookContext();
             var projectedAuthor = context.Authors.Select(a =>
@@ -51,7 +54,7 @@ namespace UI
             projectedAuthor.ForEach(pa => Console.WriteLine(pa.LastName + " " + pa.FirstName));
         }
 
-        private static void ProjectionLoading()
+        public static void ProjectionLoading()
         {
             var context = new BookContext();
             var projectedBook = context.Books.Select(a =>
@@ -62,7 +65,7 @@ namespace UI
             projectedBook.ForEach(pb => Console.WriteLine(pb.Title + " has " + pb.QuoteCount + " quotes"));
         }
 
-        private static void AddRating()
+        public static void AddRating()
         {
             var context = new BookContext();
             var book = context.Books.Find(6);
@@ -71,7 +74,7 @@ namespace UI
             context.SaveChanges();
         }
 
-        private static void AddQuotesToBook()
+        public static void AddQuotesToBook()
         {
             var context = new BookContext();
             var book = context.Books.FirstOrDefault(a => a.Title.StartsWith("Brott"));
@@ -83,7 +86,7 @@ namespace UI
             }
         }
 
-        private static void AddManyToManyObject()
+        public static void AddManyToManyObject()
         {
             var context = new BookContext();
             var author = new Author { FirstName = "Paolo", LastName = "Roberto", BirthDay = new DateTime(1966, 5, 2)};
@@ -93,7 +96,18 @@ namespace UI
             context.SaveChanges();
         }
 
-        private static void DisplayBooksEagerLoad()
+        //returerar böcker och dess författare samt betyg i webben
+        public static List<Book> GetBooksAndAuthors()
+        {
+            var context = new BookContext();
+            var books = context.Books
+                .Include(b => b.Authors)
+                .Include(b => b.Ratings)
+                .ToList();
+            return books;
+        }
+
+        public static void DisplayBooksEagerLoad()
         {
             var context = new BookContext();
             var books = context.Books
@@ -132,7 +146,7 @@ namespace UI
             }
         }
 
-        private static void AddBooksToShop()
+        public static void AddBooksToShop()
         {
             var context = new BookContext();
             var shop = context.Shops.First();
@@ -144,7 +158,14 @@ namespace UI
             context.SaveChanges();
         }
 
-        private static void AddAuthorsToBook()
+        public static void AddBookAuthorsId(int authorId, int bookId)
+        {
+            var context = new BookContext();
+            context.BookAuthors.Add(new BookAuthor { AuthorId = authorId, BookId = bookId });
+            context.SaveChanges();
+        }
+
+        public static void AddAuthorsToBook()
         {
             var context = new BookContext();
             var book = context.Books.First();
