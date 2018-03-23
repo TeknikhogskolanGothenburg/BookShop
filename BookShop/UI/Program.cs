@@ -40,8 +40,60 @@ namespace UI
             //AddRating();
             //ProjectionLoading();
             //ProjectionLoading2();
+            //SelectBooksAndShops();
+            StoredProcBooksQuotes();
 
 
+        }
+
+        public static void StoredProcBooksQuotes()
+        {
+            var context = new BookContext();
+            string quotepart = "What";
+            DateTime date1 = new DateTime(1900, 1, 1);
+            DateTime date2 = new DateTime(2020, 1, 1);
+            var books = context.Books.FromSql("EXEC BooksWithQuotes", quotepart, date1, date2).ToList();
+            foreach (var book in books)
+            {
+                Console.WriteLine(book.Title);
+            }
+        }
+
+
+
+        //Visar alla böcker som finns att köpa
+        public static void SelectBooksAndShops()
+        {
+            var context = new BookContext();
+            var books = context.Books
+                .Include(b => b.Authors)
+                    .ThenInclude(ba => ba.Author)
+                .Include(b => b.Shops)
+                    .ThenInclude(sb => sb.Shop)
+                .ToList(); 
+
+            
+           
+            foreach (var book in books)
+            {
+                if( 0 < book.Shops.Count)
+                {
+
+                Console.WriteLine(book.Title + " " + book.ReleaseDate);
+                foreach ( var author in book.Authors)
+                {
+                    Console.WriteLine(author.Author.FirstName + " " + author.Author.LastName);
+
+                }
+                foreach (var shop in book.Shops)
+                {
+                    Console.WriteLine(shop.Shop.Name);
+                }
+
+                }
+
+            }
+ 
         }
 
         public static void ProjectionLoading2()
