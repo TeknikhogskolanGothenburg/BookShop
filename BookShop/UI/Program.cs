@@ -41,17 +41,19 @@ namespace UI
             //ProjectionLoading();
             //ProjectionLoading2();
             //SelectBooksAndShops();
-            FindBookByAuthor();
+            //FindBookByAuthor();
 
 
         }
 
+        //Visar böcker efter författarens efternamn
         public static void FindBookByAuthor()
         {
             var context = new BookContext();
+            var authorLastName = "Do";
             var books = context.Books.FromSql("SELECT Books.Id, Title, ReleaseDate FROM Books JOIN BookAuthors ON " +
                 "BookAuthors.BookId = Books.Id JOIN Authors ON BookAuthors.AuthorId = Authors.Id " +
-                "WHERE Authors.LastName LIKE 'Do%'").ToList();
+                "WHERE Authors.LastName LIKE '" + @authorLastName + "%'").ToList();
             foreach (var book in books)
             {
                 Console.WriteLine(book.Title);
@@ -95,6 +97,7 @@ namespace UI
  
         }
 
+
         public static void ProjectionLoading2()
         {
             var context = new BookContext();
@@ -104,6 +107,8 @@ namespace UI
 
             projectedAuthor.ForEach(pa => Console.WriteLine(pa.LastName + " " + pa.FirstName));
         }
+
+
 
         public static void ProjectionLoading()
         {
@@ -147,7 +152,7 @@ namespace UI
             context.SaveChanges();
         }
 
-        //returerar böcker och dess författare samt betyg i webben
+        //returerar böcker och dess författare samt betyg
         public static List<Book> GetBooksAndAuthors()
         {
             var context = new BookContext();
