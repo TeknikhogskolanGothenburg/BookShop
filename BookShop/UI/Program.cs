@@ -41,18 +41,17 @@ namespace UI
             //ProjectionLoading();
             //ProjectionLoading2();
             //SelectBooksAndShops();
-            StoredProcBooksQuotes();
+            FindBookByAuthor();
 
 
         }
 
-        public static void StoredProcBooksQuotes()
+        public static void FindBookByAuthor()
         {
             var context = new BookContext();
-            string quotepart = "What";
-            DateTime date1 = new DateTime(1900, 1, 1);
-            DateTime date2 = new DateTime(2020, 1, 1);
-            var books = context.Books.FromSql("EXEC BooksWithQuotes", quotepart, date1, date2).ToList();
+            var books = context.Books.FromSql("SELECT Books.Id, Title, ReleaseDate FROM Books JOIN BookAuthors ON " +
+                "BookAuthors.BookId = Books.Id JOIN Authors ON BookAuthors.AuthorId = Authors.Id " +
+                "WHERE Authors.LastName LIKE 'Do%'").ToList();
             foreach (var book in books)
             {
                 Console.WriteLine(book.Title);
