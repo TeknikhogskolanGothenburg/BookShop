@@ -13,26 +13,21 @@ namespace UI
 
         static void Main(string[] args)
         {
-            //SingleObjectModification.AddBook();
-            //SingleObjectModification.AddBooks();
-            //SingleObjectModification.GetAllBooksByTitle();
-            //SingleObjectModification.GetAllBooks();
-            //SingleObjectModification.GetFirstBook();
-            //SingleObjectModification.FindBookById();
-            //SingleObjectModification.FindBookByTitle();
+            //SingleObjectModification.Add();
+            //SingleObjectModification.AddMany();
+            //SingleObjectModification.GetAllBy();
+            //SingleObjectModification.GetAll();
             //SingleObjectModification.Update();
             //SingleObjectModification.UpdateDisconnected();
             //SingleObjectModification.DeleteOne();
             //SingleObjectModification.DeleteMany();
             //SingleObjectModification.DeleteManyDisconnected();
             //SingleObjectModification.SelectRawSql();
-            //SingleObjectModification.AddAuthors();
             //SingleObjectModification.SelectRawSqlWithOrderingAndFilter();
             //SingleObjectModification.SelectUsingStoredProcedure();
-            //SingleObjectModification.AddShops();
 
-            //AddAuthorsToBook();
-            //AddBookAuthorsId(2, 6);
+
+            //AddAuthorsToBook("Le Pain", "Svensson");
             //AddBooksToShop();
             //DisplayBooksEagerLoad();
             //AddManyToManyObject();
@@ -42,6 +37,7 @@ namespace UI
             //ProjectionLoading2();
             //SelectBooksAndShops();
             //FindBookByAuthor();
+            //GetBooksAndAuthors();
 
 
         }
@@ -65,16 +61,9 @@ namespace UI
         //Visar alla böcker som finns att köpa
         public static void SelectBooksAndShops()
         {
-            var context = new BookContext();
-            var books = context.Books
-                .Include(b => b.Authors)
-                    .ThenInclude(ba => ba.Author)
-                .Include(b => b.Shops)
-                    .ThenInclude(sb => sb.Shop)
-                .ToList(); 
+            var bookRepo = new BooksRepository();
+            var books = bookRepo.BookInShop();
 
-            
-           
             foreach (var book in books)
             {
                 if( 0 < book.Shops.Count)
@@ -152,40 +141,56 @@ namespace UI
             context.SaveChanges();
         }
 
-        //returerar böcker och dess författare samt betyg
-        public static List<Book> GetBooksAndAuthors()
+      
+        public static void GetBooksAndAuthors()
         {
-            var context = new BookContext();
-            var books = context.Books
-                .Include(b => b.Authors)
-                .Include(b => b.Ratings)
-                .ToList();
-            return books;
+            var bookRepo = new BooksRepository();
+            var books = bookRepo.GetBooksAuthorsRatings();
+            foreach (var book in books)
+            {
+                if (book.Authors.Count > 0)
+                {
+                    Console.WriteLine(book.Title + " " + book.ReleaseDate);
+
+                    foreach (var author in book.Authors)
+                    {
+                        Console.WriteLine("\t" + author.Author.LastName + ", " + author.Author.FirstName);
+                    }                   
+                    if (book.Ratings.Count > 0)
+                    {
+                        foreach (var rating in book.Ratings)
+                        {
+                            Console.WriteLine("\tRated by: " + rating.Magazine + ", points: " + rating.Points + ", " + rating.RatingDate);
+                        }
+                    }
+                    else
+                    {
+                            Console.WriteLine("\tBook not rated yet");
+                    }
+                   
+                }
+                              
+            }
+
         }
 
+
         public static void DisplayBooksEagerLoad()
-        {
-            var context = new BookContext();
-            var books = context.Books
-                .Include(b => b.Authors)
-                    .ThenInclude(ba => ba.Author)                       
-                .Include(b => b.Ratings)
-                .Include(b => b.Quotes)
-                .Include(b => b.Shops )
-                    .ThenInclude(sb => sb.Shop)
-                .ToList();
+            {
+            var bookRepo = new BooksRepository();
+            var books = bookRepo.GetBooksAuthorsAndQuotes();
 
             Console.WriteLine("\n\n\n====================\n");
             foreach (var book in books)
             {
                 Console.Write(book.Title);
-                if (null != book.Ratings)
+                if  (book.Ratings.Count > 0)
                 {
-                    foreach(var rating in book.Ratings)
+                    foreach (var rating in book.Ratings)
                     {
                         Console.WriteLine(" => Magazine: " + rating.Magazine + " Points: " + rating.Points);
                     }
-                    
+               
                 }
                 else
                 {
@@ -214,24 +219,18 @@ namespace UI
             context.SaveChanges();
         }
 
-        public static void AddBookAuthorsId(int authorId, int bookId)
-        {
-            var context = new BookContext();
-            context.BookAuthors.Add(new BookAuthor { AuthorId = authorId, BookId = bookId });
-            context.SaveChanges();
-        }
 
-        public static void AddAuthorsToBook()
+        public static void AddAuthorsToBook(string bookTitle, string authorLastName)
         {
-            var context = new BookContext();
-            var book = context.Books.First();
-            var authors = context.Authors.ToList();
-            foreach (var author in authors)
-            {
-                context.BookAuthors.Add(new BookAuthor { AuthorId = author.Id, BookId = book.Id });
-            }
-            context.SaveChanges();
-            //authors.ForEach(a => context.BookAuthor.Add(new BookAuthor { AuthorId = a.Id, BookId = book.Id }));
+            var bookRepo = new BooksRepository();
+            var book = bookRepo.FindBy(b => b.Title.StartsWith(bookTitle)).FirstOrDefault();
+            var authorRepo = new AuthorsRepository();
+            var author = authorRepo.FindBy(a => a.LastName.StartsWith(authorLastName)).FirstOrDefault();
+            var baRepo = new BookAuthorRepository();
+            baRepo.Add(new BookAuthor { AuthorId = author.Id, BookId = book.Id });
+            
+            baRepo.Save();
+            
 
         }
     }

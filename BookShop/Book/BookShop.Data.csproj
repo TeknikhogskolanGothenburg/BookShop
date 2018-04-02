@@ -105,7 +105,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AuthorsRepository.cs" />
+    <Compile Include="BookAuthorRepository.cs" />
     <Compile Include="BookContext.cs" />
+    <Compile Include="BooksRepository.cs" />
+    <Compile Include="GenericRepository.cs" />
+    <Compile Include="IGenericRepository.cs" />
     <Compile Include="Migrations\20180313130246_Init.cs" />
     <Compile Include="Migrations\20180313130246_Init.designer.cs">
       <DependentUpon>20180313130246_Init.cs</DependentUpon>
@@ -132,6 +137,9 @@
     </Compile>
     <Compile Include="Migrations\BookContextModelSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="QuotesRepository.cs" />
+    <Compile Include="ShopBookRepository.cs" />
+    <Compile Include="ShopsRepository.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />

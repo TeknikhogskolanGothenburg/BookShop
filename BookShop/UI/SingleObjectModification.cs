@@ -33,22 +33,6 @@ namespace UI
             }
         }
 
-        public static void AddAuthors()
-        {
-            Author author1 = new Author();
-            author1.FirstName = "Fjodor";
-            author1.LastName = "Dostojevskij";
-            author1.BirthDay = new DateTime(1821, 11, 11);
-
-            Author author2 = new Author();
-            author2.FirstName = "Kalle";
-            author2.LastName = "Svensson";
-            author2.BirthDay = new DateTime(1983, 4, 19);
-
-            _context.Authors.AddRange(author1, author2);
-            _context.SaveChanges();
-        }
-
         public static void SelectRawSql()
         {
             string sql = "SELECT * FROM Books";
@@ -73,18 +57,19 @@ namespace UI
 
         public static void DeleteMany()
         {
-            string titleStart = "A";
-            var books = _context.Books.Where(m => m.Title.StartsWith(titleStart)).ToList();
-            _context.Books.RemoveRange(books);
-            _context.SaveChanges();
+            var bookRepo = new BooksRepository();
+            var books = bookRepo.GetAll()
+                .Where(b => b.Title.StartsWith("Om")).ToList();
+            bookRepo.DeleteRange(books);
+            bookRepo.Save();
         }
 
         public static void DeleteOne()
         {
-            var book = _context.Books.Find(2);
-            // var movie2 = new Movie { Id = 99, Title = "kjshdf", ReleaseDate = DateTime.Now};
-            _context.Books.Remove(book);
-            _context.SaveChanges();
+            var bookRepo = new BooksRepository();
+            var book = bookRepo.FindBy(b => b.Id == 6).FirstOrDefault();
+            bookRepo.Delete(book);
+            bookRepo.Save();
         }
 
         public static void UpdateDisconnected()
@@ -100,92 +85,62 @@ namespace UI
 
         }
 
+        //Gör så att FindBy metoden anropas och ugå ifrån den (multitrådning)
         public static void Update()
         {
-            string titleStart = "Hej";
-            var book = _context.Books.Where(m => m.Title.StartsWith(titleStart)).ToList();
-            book.ForEach(b => b.Title = "Brott och starff");
-            // _context.Books.Add(new Book { ReleaseDate = DateTime.Now });
-            _context.SaveChanges();
+            var quoteRepo = new QuotesRepository();
+            var quote = quoteRepo.FindBy(q => q.Text.StartsWith("What")).FirstOrDefault();
+            quote.Text = "Oh my darling";
+            quoteRepo.Update(quote);
+                quoteRepo.Save();
+                
         }
 
-        public static void FindBookByTitle()
+        public static void GetAll()
         {
-            var books = _context.Books.Where(b => b.Title.Contains("pain")).ToList();
-            foreach(var book in books)
-            {
-                Console.WriteLine(book.Title + " " + book.ReleaseDate);
-            }
-        }
-
-        public static void FindBookById()
-        {
-            var book1 = _context.Books.FirstOrDefault(b => b.Id == 2);
-            var book2 = _context.Books.Find(2);
-            Console.WriteLine(book1.Title);
-            Console.WriteLine(book2.Title);
-        }
-
-        public static void GetFirstBook()
-        {
-            string titleStart = "A";
-            //var movie = (from m in _context.Movies where m.Title.StartsWith(titleStart) select m).FirstOrDefault();
-            var book = _context.Books.FirstOrDefault(m => m.Title.StartsWith(titleStart));
-            Console.WriteLine(book.Title);
-        }
-
-        public static void GetAllBooks()
-        {
-            var books = _context.Books.ToList();
+            var bookRepo = new BooksRepository();
+            var books = bookRepo.GetAll();
             foreach (var book in books)
-            {
-                Console.WriteLine(book.Title + " " + book.ReleaseDate);
-            }
-        }
-
-        public static void GetAllBooksByTitle()
-        {
-            //var books1 = _context.Books.ToList();
-            //SELECT m.title FROM m books
-            //var books2 = (from b in _context.Books select b.Title).ToList();
-            //var books3 = _context.Books.Where(m => m.Title.StartsWith("En het")).ToList();
-            string startTitle = "P";
-            var books4 = (from b in _context.Books where b.Title.StartsWith(startTitle) select b).ToList();
-            // SELECT * FROM books
-            // foreach(var book in _context.Books)
-            foreach (var book in books4)
             {
                 Console.WriteLine(book.Title);
             }
         }
 
-        public static void AddShops()
+        public static void GetAllBy()
         {
-            Shop newShop1 = new Shop { Name = "Akademibokhandeln", Address = "Stora gatan 23, Göteborg" };
-            Shop newShop2 = new Shop { Name = "Ready", Address = "Smala örngatan 8A, Halmstad" };
-            List<Shop> newShop = new List<Shop> { newShop1, newShop2 };
-            _context.Shops.AddRange(newShop);
-            _context.SaveChanges();
+           
+            var bookRepo = new BooksRepository();
+            var books = bookRepo.FindBy(b => b.Title.StartsWith("Hap"));
+            foreach (var book in books)
+            {
+                Console.WriteLine(book.Title);
+            }
+
+            var book2 = bookRepo.FindBy(b => b.Id == 1).FirstOrDefault();
+            Console.WriteLine(book2.Title);
         }
 
-        public static void AddBooks()
+        public static void AddMany()
         {
-            Book newBook1 = new Book { Title = "Panta mera", ReleaseDate = DateTime.Now };
-            Book newBook2 = new Book { Title = "Le Pain francais", ReleaseDate = new DateTime(1957, 01, 15) };
-            Book newBook3 = new Book { Title = "Please don't go", ReleaseDate = new DateTime(2007, 11, 03) };
-            List<Book> newBooks = new List<Book> { newBook1, newBook2, newBook3 };
-            _context.Books.AddRange(newBooks);
-            _context.SaveChanges();
+            var shopRepo = new ShopsRepository();
+            shopRepo.AddRange(new List<Shop> { new Shop { Name = "Yellow Submarine", Address = "Anektodgatan 2, Stockholm" },
+                new Shop { Name = "Läsa", Address = "Fantasigatan 30, Malmö" } });
+            shopRepo.Save();
         }
 
-        public static void AddBook()
+       public static void Add()
         {
-            Book newBook = new Book();
-            newBook.Title = "Svindlande höjder";
-            newBook.ReleaseDate = System.DateTime.Now;
+            var bookRepo = new BooksRepository();
+            bookRepo.Add(new Book { Title = "Haparanda", ReleaseDate = new DateTime(1991, 1, 21) });
+            bookRepo.Save();
 
-            _context.Books.Add(newBook);
-            _context.SaveChanges();
+            var authorRepo = new AuthorsRepository();
+            authorRepo.Add(new Author { FirstName = "Linda", LastName = "Mattson", BirthDay = new DateTime(1957, 3, 5) });
+            authorRepo.Save();
         }
+
+       
+
+       
     }
 }
