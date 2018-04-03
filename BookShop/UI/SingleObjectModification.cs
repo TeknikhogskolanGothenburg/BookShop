@@ -4,11 +4,13 @@ using BookShop.Data;
 using BookShop.Domain;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace UI
 {
     public class SingleObjectModification
     {
+        
         private static BookContext _context = new BookContext();
 
         public static void SelectUsingStoredProcedure()
@@ -54,7 +56,6 @@ namespace UI
             newContext.SaveChanges();
         }
 
-
         public static void DeleteMany()
         {
             var bookRepo = new BooksRepository();
@@ -67,7 +68,7 @@ namespace UI
         public static void DeleteOne()
         {
             var bookRepo = new BooksRepository();
-            var book = bookRepo.FindBy(b => b.Id == 6).FirstOrDefault();
+            var book = bookRepo.FindBy(b => b.Id == 11).FirstOrDefault();
             bookRepo.Delete(book);
             bookRepo.Save();
         }
@@ -96,15 +97,33 @@ namespace UI
                 
         }
 
-        public static void GetAll()
+        public async static void GetAll()
         {
             var bookRepo = new BooksRepository();
-            var books = bookRepo.GetAll();
-            foreach (var book in books)
+            var authorRepo = new AuthorsRepository();
+           
+            Task<ICollection<Book>> books = bookRepo.GetAllAsync();
+            foreach (var book in books.Result)
             {
                 Console.WriteLine(book.Title);
             }
+
+            Task<ICollection<Author>> authors = authorRepo.GetAllAsync();
+            foreach (var author in authors.Result)
+            {
+                Console.WriteLine(author.FirstName);
+            }
+
+            await Task.WhenAll(books, authors);
+            Console.WriteLine("Both tasks done");
+            Console.ReadKey();           
         }
+            //Task<string> t1 = GreetingAsync("Peter", 2000);
+            //Task<string> t2 = GreetingAsync("Mary", 3000);
+
+            //await Task.WhenAll(t1, t2);
+            //Console.WriteLine("Both tasks done...");
+            //Console.WriteLine("Result 1: {0}\nResult 2: {1}", t1.Result, t2.Result);
 
         public static void GetAllBy()
         {
@@ -128,15 +147,21 @@ namespace UI
             shopRepo.Save();
         }
 
-       public static void Add()
+       public static void AddAuthor()
+        {
+            var authorRepo = new AuthorsRepository();
+            authorRepo.AddAsync(new Author { FirstName = "Rasmus", LastName = "Berg", BirthDay = new DateTime(1984, 12, 25) });
+            authorRepo.Save();
+            Console.WriteLine("Added new author");
+        }
+
+       public static void AddBook()
         {
             var bookRepo = new BooksRepository();
-            bookRepo.Add(new Book { Title = "Haparanda", ReleaseDate = new DateTime(1991, 1, 21) });
+            bookRepo.AddAsync(new Book { Title = "Var dig själv", ReleaseDate = new DateTime(2005, 6, 17) });
             bookRepo.Save();
+            Console.WriteLine("Added new book");
 
-            var authorRepo = new AuthorsRepository();
-            authorRepo.Add(new Author { FirstName = "Linda", LastName = "Mattson", BirthDay = new DateTime(1957, 3, 5) });
-            authorRepo.Save();
         }
 
        

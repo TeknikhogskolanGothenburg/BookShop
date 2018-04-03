@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace BookShop.Data  
 {
     public abstract class GenericRepository<C, T> : IGenericRepository<T> where T : class where C : DbContext, new()
@@ -16,6 +17,8 @@ namespace BookShop.Data
             get { return _entities; }
             set { _entities = value; }
         }
+
+        
 
         public virtual void Add(T entity)
         {
@@ -59,12 +62,12 @@ namespace BookShop.Data
 
         public virtual async Task<ICollection<T>> GetAllAsync()
         {
-            //Console.WriteLine("Before");
-            //var result = await _enteties.Set<T>().ToListAsync<T>();
-            //Console.WriteLine("allDone");
-            //return result;
+            Console.WriteLine("Before");
+            var result = await _entities.Set<T>().ToListAsync<T>();
+            Console.WriteLine("allDone");
+            return result;
 
-            return await _entities.Set<T>().ToListAsync<T>();
+            //return await _entities.Set<T>().ToListAsync<T>();
         }
 
         public virtual void Save()

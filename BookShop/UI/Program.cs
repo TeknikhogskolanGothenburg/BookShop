@@ -4,6 +4,8 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using BookShop.Data;
 using BookShop.Domain;
+using System.Threading;
+using static System.Threading.Thread;
 
 namespace UI
 {
@@ -13,10 +15,23 @@ namespace UI
 
         static void Main(string[] args)
         {
-            //SingleObjectModification.Add();
+            //Nu kan man samtidigt anropa metoder som lägger till böcker och authors samt skapar en join connection mellan dessa
+            //Thread thread1 = new Thread(SingleObjectModification.AddBook);
+            //Thread thread2 = new Thread(SingleObjectModification.AddAuthor);
+            //thread1.Start();
+            //thread2.Start();
+            //thread1.Join();
+            //thread2.Join();
+            //Console.WriteLine("All done");
+            //var baRepo = new BookAuthorRepository();
+            //baRepo.AddBookToAuthor("Berg", "Var dig");
+
+
+
+
             //SingleObjectModification.AddMany();
             //SingleObjectModification.GetAllBy();
-            //SingleObjectModification.GetAll();
+            SingleObjectModification.GetAll();
             //SingleObjectModification.Update();
             //SingleObjectModification.UpdateDisconnected();
             //SingleObjectModification.DeleteOne();
@@ -27,10 +42,12 @@ namespace UI
             //SingleObjectModification.SelectUsingStoredProcedure();
 
 
+
+
+
             //AddAuthorsToBook("Le Pain", "Svensson");
             //AddBooksToShop();
             //DisplayBooksEagerLoad();
-            //AddManyToManyObject();
             //AddQuotesToBook();
             //AddRating();
             //ProjectionLoading();
@@ -131,15 +148,15 @@ namespace UI
             }
         }
 
-        public static void AddManyToManyObject()
-        {
-            var context = new BookContext();
-            var author = new Author { FirstName = "Paolo", LastName = "Roberto", BirthDay = new DateTime(1966, 5, 2)};
-            var book = context.Books.Find(6);
-            context.Add(author);
-            context.Add(new BookAuthor { Book = book, Author = author });
-            context.SaveChanges();
-        }
+        //public static void AddManyToManyObject()
+        //{
+        //    var context = new BookContext();
+        //    var author = new Author { FirstName = "Paolo", LastName = "Roberto", BirthDay = new DateTime(1966, 5, 2)};
+        //    var book = context.Books.Find(6);
+        //    context.Add(author);
+        //    context.Add(new BookAuthor { Book = book, Author = author });
+        //    context.SaveChanges();
+        //}
 
       
         public static void GetBooksAndAuthors()
@@ -209,14 +226,16 @@ namespace UI
 
         public static void AddBooksToShop()
         {
-            var context = new BookContext();
-            var shop = context.Shops.First();
-            var books = context.Books.ToList();
+            var shopRepo = new ShopsRepository();
+            var shop = shopRepo.FindBy(s => s.Address.StartsWith("Fantasigatan")).FirstOrDefault();
+            var bookRepo = new BooksRepository();
+            var books = bookRepo.GetAll();
+            var sbRepo = new ShopBookRepository();
             foreach(var book in books)
             {
-                context.ShopBooks.Add(new ShopBook { BookId = book.Id, ShopId = shop.Id });
+                sbRepo.Add(new ShopBook { BookId = book.Id, ShopId = shop.Id });
             }
-            context.SaveChanges();
+            sbRepo.Save();
         }
 
 
