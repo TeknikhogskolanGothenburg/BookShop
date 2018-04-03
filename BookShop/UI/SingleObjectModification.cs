@@ -118,12 +118,6 @@ namespace UI
             Console.WriteLine("Both tasks done");
             Console.ReadKey();           
         }
-            //Task<string> t1 = GreetingAsync("Peter", 2000);
-            //Task<string> t2 = GreetingAsync("Mary", 3000);
-
-            //await Task.WhenAll(t1, t2);
-            //Console.WriteLine("Both tasks done...");
-            //Console.WriteLine("Result 1: {0}\nResult 2: {1}", t1.Result, t2.Result);
 
         public static void GetAllBy()
         {
@@ -150,7 +144,7 @@ namespace UI
        public static void AddAuthor()
         {
             var authorRepo = new AuthorsRepository();
-            authorRepo.AddAsync(new Author { FirstName = "Rasmus", LastName = "Berg", BirthDay = new DateTime(1984, 12, 25) });
+            authorRepo.Add(new Author { FirstName = "Rasmus", LastName = "Berg", BirthDay = new DateTime(1984, 12, 25) });
             authorRepo.Save();
             Console.WriteLine("Added new author");
         }
@@ -158,7 +152,7 @@ namespace UI
        public static void AddBook()
         {
             var bookRepo = new BooksRepository();
-            bookRepo.AddAsync(new Book { Title = "Var dig själv", ReleaseDate = new DateTime(2005, 6, 17) });
+            bookRepo.Add(new Book { Title = "Var dig själv", ReleaseDate = new DateTime(2005, 6, 17) });
             bookRepo.Save();
             Console.WriteLine("Added new book");
 

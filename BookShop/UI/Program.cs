@@ -6,6 +6,7 @@ using BookShop.Data;
 using BookShop.Domain;
 using System.Threading;
 using static System.Threading.Thread;
+using System.Threading.Tasks;
 
 namespace UI
 {
@@ -31,7 +32,7 @@ namespace UI
 
             //SingleObjectModification.AddMany();
             //SingleObjectModification.GetAllBy();
-            SingleObjectModification.GetAll();
+            //SingleObjectModification.GetAll();
             //SingleObjectModification.Update();
             //SingleObjectModification.UpdateDisconnected();
             //SingleObjectModification.DeleteOne();
@@ -43,9 +44,6 @@ namespace UI
 
 
 
-
-
-            //AddAuthorsToBook("Le Pain", "Svensson");
             //AddBooksToShop();
             //DisplayBooksEagerLoad();
             //AddQuotesToBook();
@@ -238,19 +236,5 @@ namespace UI
             sbRepo.Save();
         }
 
-
-        public static void AddAuthorsToBook(string bookTitle, string authorLastName)
-        {
-            var bookRepo = new BooksRepository();
-            var book = bookRepo.FindBy(b => b.Title.StartsWith(bookTitle)).FirstOrDefault();
-            var authorRepo = new AuthorsRepository();
-            var author = authorRepo.FindBy(a => a.LastName.StartsWith(authorLastName)).FirstOrDefault();
-            var baRepo = new BookAuthorRepository();
-            baRepo.Add(new BookAuthor { AuthorId = author.Id, BookId = book.Id });
-            
-            baRepo.Save();
-            
-
-        }
     }
 }
