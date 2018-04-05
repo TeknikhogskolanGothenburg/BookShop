@@ -131,13 +131,14 @@
     <Compile Include="Migrations\20180319092413_joinTables.designer.cs">
       <DependentUpon>20180319092413_joinTables.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\20180323102059_StoredProcedure2.cs" />
-    <Compile Include="Migrations\20180323102059_StoredProcedure2.designer.cs">
-      <DependentUpon>20180323102059_StoredProcedure2.cs</DependentUpon>
+    <Compile Include="Migrations\20180405065445_checkConstraint.cs" />
+    <Compile Include="Migrations\20180405065445_checkConstraint.designer.cs">
+      <DependentUpon>20180405065445_checkConstraint.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\BookContextModelSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuotesRepository.cs" />
+    <Compile Include="RatingsRepository.cs" />
     <Compile Include="ShopBookRepository.cs" />
     <Compile Include="ShopsRepository.cs" />
   </ItemGroup>

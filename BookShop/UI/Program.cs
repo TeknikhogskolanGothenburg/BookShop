@@ -41,6 +41,7 @@ namespace UI
             //SingleObjectModification.SelectRawSql();
             //SingleObjectModification.SelectRawSqlWithOrderingAndFilter();
             //SingleObjectModification.SelectUsingStoredProcedure();
+            SingleObjectModification.AddRateWithCK();
 
 
 
@@ -53,6 +54,8 @@ namespace UI
             //SelectBooksAndShops();
             //FindBookByAuthor();
             //GetBooksAndAuthors();
+
+
 
 
         }

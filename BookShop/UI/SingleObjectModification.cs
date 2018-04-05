@@ -13,6 +13,21 @@ namespace UI
         
         private static BookContext _context = new BookContext();
 
+        public static void AddRateWithCK()
+        {
+            var rateRepo = new RatingsRepository();
+            try
+            {
+                rateRepo.Add(new Rating { Magazine = "Samuel", Points = 5, RatingDate = DateTime.Now, BookId = 17 });
+                rateRepo.Save();
+                Console.WriteLine("Added new rating successfully");
+            }
+            catch
+            {
+                Console.WriteLine("Can't add a rating with less than 1 or higher than 5 points...");
+            }
+        }
+
         public static void SelectUsingStoredProcedure()
         {
             string searchString = "Om";
