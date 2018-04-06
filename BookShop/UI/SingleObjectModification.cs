@@ -75,7 +75,7 @@ namespace UI
         {
             var bookRepo = new BooksRepository();
             var books = bookRepo.GetAll()
-                .Where(b => b.Title.StartsWith("Om")).ToList();
+                .Where(b => b.Title.StartsWith("Var")).ToList();
             bookRepo.DeleteRange(books);
             bookRepo.Save();
         }
@@ -112,16 +112,25 @@ namespace UI
                 
         }
 
+        //Här använder jag asyncron metoden för att böcker och författare ska kunna hämtas oberoende av main tråden
+        //samt att hela metoden GetAll körs oberoende av main tråden.
         public async static void GetAll()
         {
             var bookRepo = new BooksRepository();
             var authorRepo = new AuthorsRepository();
-           
+
+            Console.WriteLine("Starting");
+
+
             Task<ICollection<Book>> books = bookRepo.GetAllAsync();
             foreach (var book in books.Result)
             {
                 Console.WriteLine(book.Title);
+                    
             }
+
+            Console.WriteLine("In process");
+           
 
             Task<ICollection<Author>> authors = authorRepo.GetAllAsync();
             foreach (var author in authors.Result)
@@ -130,8 +139,9 @@ namespace UI
             }
 
             await Task.WhenAll(books, authors);
+
             Console.WriteLine("Both tasks done");
-            Console.ReadKey();           
+                      
         }
 
         public static void GetAllBy()
@@ -159,7 +169,7 @@ namespace UI
        public static void AddAuthor()
         {
             var authorRepo = new AuthorsRepository();
-            authorRepo.Add(new Author { FirstName = "Rasmus", LastName = "Berg", BirthDay = new DateTime(1984, 12, 25) });
+            authorRepo.Add(new Author { FirstName = "Anders", LastName = "Gren", BirthDay = new DateTime(1922, 1, 2) });
             authorRepo.Save();
             Console.WriteLine("Added new author");
         }
@@ -167,11 +177,13 @@ namespace UI
        public static void AddBook()
         {
             var bookRepo = new BooksRepository();
-            bookRepo.Add(new Book { Title = "Var dig själv", ReleaseDate = new DateTime(2005, 6, 17) });
+            bookRepo.Add(new Book { Title = "Som man bäddar får man ligga", ReleaseDate = new DateTime(2007, 10, 7) });
             bookRepo.Save();
             Console.WriteLine("Added new book");
 
         }
+
+       
 
        
 
