@@ -24,7 +24,7 @@ namespace UI
             //Console.WriteLine("Matched");
             //Console.ReadKey();
 
-            //Nu kan man samtidigt anropa metoder som lägger till böcker och authors samt skapar en join connection mellan dessa
+            //Här tilldelas trådarna varsin metod att exekvera och man kan på så sätt anropa båda metoderna samtidigt samt en tredje metod som körs i main tråden.
             //Thread thread1 = new Thread(SingleObjectModification.AddBook);
             //Thread thread2 = new Thread(SingleObjectModification.AddAuthor);
             //thread1.Start();
@@ -61,10 +61,22 @@ namespace UI
             //ProjectionLoading2();
             //SelectBooksAndShops();
             //FindBookByAuthor();
+            //AddBookToQuote();
 
 
 
 
+        }
+
+        public static void AddBookToQuote()
+        {
+            var bookRepo = new BooksRepository();
+            var quoteRepo = new QuotesRepository();
+            Book book = bookRepo.FindBy(b => b.Title.StartsWith("Haparanda")).FirstOrDefault();
+            Quote quote = quoteRepo.FindBy(q => q.Id == 5).FirstOrDefault();
+            quote.FromBook = book;
+            Console.WriteLine(quote.Text + " " + quote.FromBook.Title);
+            Console.ReadKey();
         }
 
         //Visar böcker efter författarens efternamn

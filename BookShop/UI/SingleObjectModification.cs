@@ -101,19 +101,23 @@ namespace UI
 
         }
 
-        //Gör så att FindBy metoden anropas och ugå ifrån den (multitrådning)
         public static void Update()
         {
             var quoteRepo = new QuotesRepository();
-            var quote = quoteRepo.FindBy(q => q.Text.StartsWith("What")).FirstOrDefault();
-            quote.Text = "Oh my darling";
-            quoteRepo.Update(quote);
+            var quotes = quoteRepo.FindBy(q => q.Text.StartsWith("When you see you are blind")).ToList();
+            foreach (var quote in quotes)
+            {
+                Console.WriteLine(quote.Text);
+                quote.Text = "When you can't see you are blind";
+                quoteRepo.Update(quote);
                 quoteRepo.Save();
-                
+                Console.WriteLine("\tNew Quote: " + quote.Text);
+            }
+
         }
 
         //Här använder jag asyncron metoden för att böcker och författare ska kunna hämtas oberoende av main tråden
-        //samt att hela metoden GetAll körs oberoende av main tråden.
+        //samt att await pausar all vidare exekvering fram tills alla böcker och författare är framtagna.
         public async static void GetAll()
         {
             var bookRepo = new BooksRepository();
@@ -160,10 +164,11 @@ namespace UI
 
         public static void AddMany()
         {
-            var shopRepo = new ShopsRepository();
-            shopRepo.AddRange(new List<Shop> { new Shop { Name = "Yellow Submarine", Address = "Anektodgatan 2, Stockholm" },
-                new Shop { Name = "Läsa", Address = "Fantasigatan 30, Malmö" } });
-            shopRepo.Save();
+            var quoteRepo = new QuotesRepository();
+            quoteRepo.AddRange(new List<Quote> { new Quote { Text = "When you see you are blind", BookId = 18 },
+                new Quote { Text = "When you see you are blind", BookId = 19 },
+                new Quote {Text = "Äre nån i stuga?", BookId = 10 } });
+            quoteRepo.Save();
         }
 
        public static void AddAuthor()
